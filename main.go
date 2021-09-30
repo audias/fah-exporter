@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"net/http"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 )
 
 const (
-	defaultFahAddress = "127.0.0.1:36330"
+	defaultFahAddress = "192.168.0.201:36330"
 )
 
 var (
@@ -31,15 +30,17 @@ func main() {
 		defaultThrottle, _ = time.ParseDuration("1h")
 	)
 
-	flag.StringVar(&level, "log.level", "info", "Set the output log level")
-	flag.BoolVar(&noTimestamps, "log.no-timestamps", false, "Disable logging timestamps, true when using systemd activation")
-	flag.StringVar(&listenAddress, "web.listen-address", "0.0.0.0:9659", "Address to listen on for web interface and telemetry.")
-	flag.StringVar(&metricsPath, "web.telemetry-path", "/metrics", "Path under which to expose metrics.")
-	flag.BoolVar(&socketActivate, "systemd", false, "Run using systemd socket activation")
-	flag.StringVar(&fahAddress, "fah.address", defaultFahAddress, "Listen address of FAH client")
-	flag.BoolVar(&getAPI, "fah.api", false, "Get donor stats from FAH API")
-	flag.DurationVar(&apiThrottle, "fah.api-throttle", defaultThrottle, "How often to refresh API data")
-	flag.Parse()
+	level = getVariable("LOG_LEVEL", "info")
+	noTimestamps = getBooleanVariable("LOG_NO_TIMESTAMPS", false)
+	listenAddress = getVariable("LISTEN_ADDRESS", "0.0.0.0:9659")
+	fahAddress = getVariable("FAH_ADDRESS", defaultFahAddress)
+	getAPI = getBooleanVariable("GET_DONOR_DATA", false)
+
+	metricsPath = "/metrics"
+	socketActivate = false
+	getAPI = false
+	apiThrottle = defaultThrottle
+
 	setLogLevel(level)
 
 	if noTimestamps || socketActivate {
