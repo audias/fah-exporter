@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  fah-exporter:
+    build: .
+    container_name: fah-exporter
+    environment:
+      - GET_DONOR_DATA=true
